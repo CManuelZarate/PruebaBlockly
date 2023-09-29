@@ -471,10 +471,32 @@ export const jsonTools2 = {
         {
           "kind": "block",
           "type": "text"
+        },
+        {
+          "kind": "block",
+          "type": "base_delay"
         }
       ]
       
       
+    },
+    {
+      "kind": "category",
+      "name": "Logic",
+      "contents": [
+        {
+          "kind": "block",
+          "type": "logic_compare"
+        },
+        {
+          "kind": "block",
+          "type": "logic_operation"
+        },
+        {
+          "kind": "block",
+          "type": "logic_boolean"
+        }
+      ]
     }
   ]
   
