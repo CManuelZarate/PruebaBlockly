@@ -15,6 +15,11 @@ import { a, jsonTools,jsonTools2, reto1, xmlTools,CustomEs } from '../../utils';
 
 import {javascriptGenerator} from 'blockly/javascript';//para el generador
 
+
+const Order = {
+  ATOMIC: 0,
+}; 
+
 @Component({
   selector: 'app-blockly',
   templateUrl: './blockly.component.html',
@@ -23,13 +28,44 @@ import {javascriptGenerator} from 'blockly/javascript';//para el generador
 export class BlocklyComponent implements OnInit {
 
   ws:Blockly.Workspace | any; //espacio de trabajo
-  Arduino=Blockly.Generator;
+  //Arduino=Blockly.Generator;
+  Arduino: Blockly.Generator;
+
+  
   
   constructor() {
     this.Arduino = new Blockly.Generator('Arduino');
+    
+    //this.Arduino.ORDER_ATOMIC=0
+    this.Arduino.forBlock["base_delay"]=function(block, generator){
+      return"delay("+(generator.valueToCode(block,"DELAY_TIME",Order.ATOMIC)||"1000")+");\n"
+    };
+    this.ga();
+    this.quote_("as");
+    this.Arduino.forBlock["text"] = (block, generator) => {
+      // Text value.
+        //var code = 'String('+Blockly.Arduino.quote_(this.getFieldValue('TEXT'))+')';
 
+      var code = this.quote_(block.getFieldValue('TEXT')) ;//LA FUNCION FLECHA HACE QUE SE DESVINCULE Y TRABAJE EL QUOTE CON ESTE Q DEFINI
+      return [code, Order.ATOMIC];
+    };
   }
 
+  ga(){
+    return "";
+  }
+
+  quote_(string : string) {
+    // Can't use goog.string.quote since Google's style guide recommends
+    // JS string literals use single quotes.
+    string = string.replace(/\\/g, '\\\\')
+                 .replace(/\n/g, '\\\n')
+                 .replace(/'/g, '\\\'');
+    return '\'' + string + '\'';
+  };
+
+  
+  /*
   configureArduinoGenerator(generator: Blockly.Generator): void {
     class ArduinoGenerator extends Blockly.Generator {
       constructor(name: string) {
@@ -45,8 +81,9 @@ export class BlocklyComponent implements OnInit {
       }
     }
 
-    this.Arduino = new ArduinoGenerator('Arduino');
+    //this.Arduino = new ArduinoGenerator('Arduino');
   }
+  */
 
   ngOnInit() {
     //Blockly.setLocale(Es);
@@ -132,16 +169,26 @@ export class BlocklyComponent implements OnInit {
     
 
     //arduino_compressed.js -- > es el que tiene el generador de codigo
+    /*
     this.Arduino.init = () => {
       // Define las funciones generadoras para tus bloques personalizados aquí
       this.base_delay = function () {
         return "delay(" + (this.valueToCode(this, "DELAY_TIME", this.ORDER_ATOMIC) || "1000") + ");\n";
       };
     }
-    
-    this.Arduino.base_delay=function(){
+    */
+
+    /*
+    this.Arduino.forBlock["base_delay"]=function(block, generator){
+      return"delay("+(generator.valueToCode(block,"DELAY_TIME",this.Order)||"1000")+");\n"
+    };
+*/
+
+    /*
+    this.Arduino["base_delay"]=function(){
       return"delay("+(this.Arduino.valueToCode(this,"DELAY_TIME",this.Arduino.ORDER_ATOMIC)||"1000")+");\n"
     };
+    */
 
     //Arduino=new Blockly.Generator("Arduino");
     this.ws = Blockly.inject(blocklyDiv, {
@@ -158,7 +205,8 @@ export class BlocklyComponent implements OnInit {
   }
 
   ngDoCheck(): void {
-    let code = javascriptGenerator.workspaceToCode(this.ws);
+    //let code = javascriptGenerator.workspaceToCode(this.ws);
+    let code = this.Arduino.workspaceToCode(this.ws);
     //este codigo no se porque no da
     //let code = (Blockly as any).JavaScript.workspaceToCode(this.ws);
 
