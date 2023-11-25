@@ -475,6 +475,10 @@ export const jsonTools2 = {
         {
           "kind": "block",
           "type": "base_delay"
+        },
+        {
+          "kind": "block",
+          "type": "inout_digital_write"
         }
       ]
       
